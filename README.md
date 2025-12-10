@@ -5,7 +5,7 @@ This project develops a comprehensive machine learning pipeline for predicting A
 
 ### Motivation
 
-The idea to do this project was birthed during a time when Delhi was g
+This project was made during a time when Delhi was gripped by an air pollution crisis. The AQI was getting so bad that the readings were starting to dip in the severe category for multiple days in a row. However, at some point the govt. decided to fudge the data or not show it at all. Which infuriated me to no end. Thereofre, I decided to put my AI/ML skills to good use and (try to) make my own predictor model.
 
 ###  Objectives
 
@@ -44,9 +44,12 @@ flowchart LR
     A[**Data Preprocessing**] 
     B[**Feature Engineering**]
     C[**Model Training & Validation**]
-    D[**Data Leakage Detection**]
+    D{**Data Leakage Detection**}
+    E[**Production-Ready Model**]
     
     A --> B --> C --> D
+    D -->|Leakage Found| B
+    D -->|No Leakage| E
 ```
 
 ### Data Preprocessing
@@ -74,8 +77,14 @@ Time series cross-validation was conducted. The train-test split of the data mai
 
 ## 📊 Results
 
-| Model | Overall Bias (Mean) | 
-|-------|----------------------|
-| R<sup>2</sup> Score | 0.80 |
-| Improvement over baseline | 17% | 
-| Variance Explained | 80% |
+The baseline uses a simple "persistence" approach: tomorrow's AQI = today's AQI. It assumes air quality doesn't change much day-to-day. This is surprisingly effective for time series data and serves as the minimum benchmark any ML model should beat.
+
+
+| Metric | Baseline | Random Forest | Description |
+|--------|----------|---------------|-------------|
+| MAE    |   41.04  |    34.06      | On average, RF predictions are off by 34 points vs 41 for baseline|
+| RMSE   |   55.08  |    41.09      | RF makes fewer large errors (RMSE penalizes big mistakes more) |
+| R<sup>2</sup>| 0.686|  0.803      | RF explains 80% of AQI variance vs 69% for baseline |
+| MAPE   |  16.22 % | 10.93 %       | RF's percentage error is ~11% vs ~16% for baseline |
+
+In practical terms: if baseline was wrong by 41 AQI points on average, our model is wrong by only 34 points. This point difference matters because it's reliable enough for public health advisories and planning. 
